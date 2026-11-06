@@ -1,0 +1,86 @@
+﻿
+@{
+    ViewData["Title"] = "Upload Drone Image";
+    var farmName = ViewBag.FarmName as string ?? "Farm001";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <a asp-action="Index"
+           asp-route-farmName="@farmName"
+           class="text-decoration-none">
+            <i class="bi bi-arrow-left"></i> Back to Drone Images
+        </a>
+
+        <h2 class="fw-bold mt-3">Upload Drone Image</h2>
+        <p class="text-muted">
+            Upload aerial images of your farm for analysis and monitoring.
+        </p>
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <form asp-action="Upload"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly"
+                     class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        Farm Name
+                    </label>
+
+                    <input type="text"
+                           name="farmName"
+                           class="form-control"
+                           value="@farmName"
+                           required />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        Select Drone Image
+                    </label>
+
+                    <input type="file"
+                           name="image"
+                           class="form-control"
+                           accept=".jpg,.jpeg,.png,.tif,.tiff"
+                           required />
+
+                    <small class="text-muted">
+                        Accepted formats: JPG, JPEG, PNG and TIFF.
+                    </small>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i>
+                    After upload, the Blob Trigger automatically records
+                    the image upload in Azure Table Storage.
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-cloud-upload"></i>
+                    Upload Image
+                </button>
+
+                <a asp-action="Index"
+                   asp-route-farmName="@farmName"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

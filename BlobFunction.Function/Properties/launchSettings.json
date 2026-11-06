@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "BlobFunction.Function": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7060",
+      "launchBrowser": false
+    }
+  }
+}

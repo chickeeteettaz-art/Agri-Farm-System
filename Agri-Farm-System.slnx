@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Agri-Web.MVC/Agri-Web.MVC.csproj" />
+  <Project Path="BlobCodeFunction.Functions/BlobCodeFunction.Functions.csproj" Id="43dabb4b-8bda-432c-af76-6f3edd4a0084" />
+  <Project Path="ClassLibrary.Data/ClassLibrary.Data.csproj" />
+  <Project Path="IrrigationFunction/IrrigationFunction.csproj" Id="7e42b3f2-12a0-4e72-8402-acc7286b222d" />
+  <Project Path="ProcessIrrigationFunction/ProcessIrrigationFunction.csproj" Id="fbb452d1-3dcb-485b-a853-ff488d624e73" />
+  <Project Path="TelemetryFunction/TelemetryFunction.csproj" Id="58ba424b-b202-4bbc-b4b0-0fabd2c72807" />
+</Solution>

@@ -1,0 +1,288 @@
+﻿
+@{
+    ViewData["Title"] = "Farm Dashboard";
+}
+
+<div class="container-fluid px-0">
+
+    <!-- Welcome section -->
+    <div class="welcome-panel mb-4">
+        <div class="welcome-content">
+            <span class="welcome-label">
+                SMART AGRICULTURE MANAGEMENT
+            </span>
+
+            <h2>Welcome to AgriStream IoT</h2>
+
+            <p>
+                Monitor your farm, analyse environmental conditions
+                and manage irrigation operations from one platform.
+            </p>
+
+            <a asp-controller="Telemetry"
+               asp-action="Index"
+               class="btn btn-light mt-2">
+                <i class="bi bi-activity me-2"></i>
+                View Farm Telemetry
+            </a>
+        </div>
+
+        <div class="welcome-decoration">
+            <i class="bi bi-flower2"></i>
+        </div>
+    </div>
+
+    <!-- Overview cards -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card metric-card h-100">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="metric-label">Farm Monitoring</div>
+                        <div class="metric-value">Active</div>
+                        <small class="text-success">
+                            <i class="bi bi-check-circle me-1"></i>
+                            Dashboard available
+                        </small>
+                    </div>
+
+                    <div class="metric-icon green">
+                        <i class="bi bi-grid"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card metric-card h-100">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="metric-label">Telemetry</div>
+                        <div class="metric-value">Sensors</div>
+                        <small class="text-muted">
+                            Monitor farm conditions
+                        </small>
+                    </div>
+
+                    <div class="metric-icon blue">
+                        <i class="bi bi-activity"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card metric-card h-100">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="metric-label">Drone Monitoring</div>
+                        <div class="metric-value">Images</div>
+                        <small class="text-muted">
+                            Aerial farm inspections
+                        </small>
+                    </div>
+
+                    <div class="metric-icon amber">
+                        <i class="bi bi-camera"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card metric-card h-100">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <div class="metric-label">Irrigation</div>
+                        <div class="metric-value">Control</div>
+                        <small class="text-muted">
+                            Manage irrigation commands
+                        </small>
+                    </div>
+
+                    <div class="metric-icon green">
+                        <i class="bi bi-droplet"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Main content -->
+    <div class="row g-4">
+
+        <div class="col-lg-8">
+
+            <div class="card h-100">
+                <div class="card-header">
+                    <h5 class="mb-1">Farm Management</h5>
+                    <small class="text-muted">
+                        Access your main agricultural management tools.
+                    </small>
+                </div>
+
+                <div class="card-body">
+                    <div class="row g-3">
+
+                        <div class="col-md-6">
+                            <a asp-controller="Telemetry"
+                               asp-action="Index"
+                               class="feature-card">
+
+                                <div class="feature-icon green">
+                                    <i class="bi bi-graph-up-arrow"></i>
+                                </div>
+
+                                <h6>Farm Telemetry</h6>
+
+                                <p>
+                                    Review soil moisture, temperature
+                                    and pH readings from farm sensors.
+                                </p>
+
+                                <span>
+                                    View readings
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a asp-controller="DroneImages"
+                               asp-action="Index"
+                               class="feature-card">
+
+                                <div class="feature-icon amber">
+                                    <i class="bi bi-camera"></i>
+                                </div>
+
+                                <h6>Drone Images</h6>
+
+                                <p>
+                                    Upload and manage aerial images
+                                    captured during farm inspections.
+                                </p>
+
+                                <span>
+                                    Manage images
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a asp-controller="Irrigation"
+                               asp-action="Index"
+                               class="feature-card">
+
+                                <div class="feature-icon blue">
+                                    <i class="bi bi-droplet-half"></i>
+                                </div>
+
+                                <h6>Irrigation Control</h6>
+
+                                <p>
+                                    Submit irrigation commands and
+                                    manage connected farm devices.
+                                </p>
+
+                                <span>
+                                    Control irrigation
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </a>
+                        </div>
+
+                        <div class="col-md-6">
+                            <a asp-controller="DroneImages"
+                               asp-action="Upload"
+                               class="feature-card">
+
+                                <div class="feature-icon green">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                </div>
+
+                                <h6>Upload Farm Data</h6>
+
+                                <p>
+                                    Add new drone imagery to your
+                                    farm's cloud storage.
+                                </p>
+
+                                <span>
+                                    Upload image
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Platform Information</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="platform-info">
+                        <div class="platform-info-icon">
+                            <i class="bi bi-cloud-check"></i>
+                        </div>
+
+                        <div>
+                            <strong>Cloud Storage</strong>
+                            <p>Drone imagery stored in Azure Blob Storage.</p>
+                        </div>
+                    </div>
+
+                    <div class="platform-info">
+                        <div class="platform-info-icon">
+                            <i class="bi bi-database"></i>
+                        </div>
+
+                        <div>
+                            <strong>Sensor Data</strong>
+                            <p>Telemetry records managed using Azure Table Storage.</p>
+                        </div>
+                    </div>
+
+                    <div class="platform-info">
+                        <div class="platform-info-icon">
+                            <i class="bi bi-lightning-charge"></i>
+                        </div>
+
+                        <div>
+                            <strong>Automated Processing</strong>
+                            <p>Azure Functions handle image auditing and irrigation workflows.</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="farm-tip-card">
+                <i class="bi bi-lightbulb"></i>
+
+                <h5>Smart Farming Tip</h5>
+
+                <p>
+                    Regularly review soil moisture readings to help
+                    make informed irrigation decisions and reduce
+                    unnecessary water consumption.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

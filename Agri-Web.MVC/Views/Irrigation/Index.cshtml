@@ -1,0 +1,219 @@
+﻿
+@model Agri_Web.MVC.Models.IrrigationCommandViewModel
+
+@{
+    ViewData["Title"] = "Irrigation Management";
+}
+
+<div class="container py-4">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Irrigation Management</h2>
+        <p class="text-muted">
+            Send irrigation commands to registered farm devices.
+        </p>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="row g-4">
+
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Irrigation Control</h5>
+                </div>
+
+                <div class="card-body p-4">
+
+                    <form asp-action="QueueCommand"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="DeviceId"
+                                   class="form-label fw-semibold">
+                                Select Device
+                            </label>
+
+                            <input asp-for="DeviceId"
+                                   class="form-control"
+                                   placeholder="Example: DEVICE001"
+                                   required />
+
+                            <span asp-validation-for="DeviceId"
+                                  class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Command"
+                                   class="form-label fw-semibold">
+                                Irrigation Action
+                            </label>
+
+                            <select asp-for="Command"
+                                    class="form-select"
+                                    id="commandSelect"
+                                    required>
+
+                                <option value="">
+                                    Select an action
+                                </option>
+
+                                <option value="START_IRRIGATION">
+                                    Start Irrigation
+                                </option>
+
+                                <option value="STOP_IRRIGATION">
+                                    Stop Irrigation
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="mb-3"
+                             id="durationContainer">
+
+                            <label asp-for="DurationMinutes"
+                                   class="form-label fw-semibold">
+                                Irrigation Duration (Minutes)
+                            </label>
+
+                            <input asp-for="DurationMinutes"
+                                   type="number"
+                                   min="1"
+                                   max="1440"
+                                   class="form-control"
+                                   value="30" />
+
+                            <small class="text-muted">
+                                Choose a duration between 1 and 1440 minutes.
+                            </small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="RequestedByUserId"
+                                   class="form-label fw-semibold">
+                                Requested By
+                            </label>
+
+                            <input asp-for="RequestedByUserId"
+                                   class="form-control"
+                                   placeholder="Farmer user ID" />
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-success w-100">
+                            <i class="bi bi-send"></i>
+                            Submit Irrigation Command
+                        </button>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-5">
+
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body p-4">
+
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="bi bi-info-circle fs-3 text-primary me-3"></i>
+
+                        <h5 class="mb-0">How It Works</h5>
+                    </div>
+
+                    <ol class="text-muted">
+                        <li class="mb-2">
+                            Select the irrigation device.
+                        </li>
+
+                        <li class="mb-2">
+                            Choose whether to start or stop irrigation.
+                        </li>
+
+                        <li class="mb-2">
+                            Set the irrigation duration when starting.
+                        </li>
+
+                        <li>
+                            Submit the command to Azure Queue Storage.
+                        </li>
+                    </ol>
+
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+
+                    <h5 class="fw-bold mb-3">Command Information</h5>
+
+                    <p class="text-muted small">
+                        Submitted commands are initially marked as
+                        <strong>Pending</strong> in Azure Queue Storage.
+                        Queue submission does not confirm that the physical
+                        irrigation device has executed the command.
+                    </p>
+
+                    <span class="badge bg-warning text-dark">
+                        Queue-based submission
+                    </span>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        const commandSelect = document.getElementById("commandSelect");
+        const durationContainer =
+            document.getElementById("durationContainer");
+
+        const durationInput =
+            document.getElementById("DurationMinutes");
+
+        function updateDurationVisibility() {
+            const isStarting =
+                commandSelect.value === "START_IRRIGATION";
+
+            durationContainer.style.display =
+                isStarting ? "block" : "none";
+
+            durationInput.required = isStarting;
+
+            if (!isStarting) {
+                durationInput.value = 0;
+            } else if (Number(durationInput.value) < 1) {
+                durationInput.value = 30;
+            }
+        }
+
+        commandSelect.addEventListener(
+            "change",
+            updateDurationVisibility
+        );
+
+        updateDurationVisibility();
+    </script>
+}

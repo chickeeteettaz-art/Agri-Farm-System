@@ -1,0 +1,180 @@
+﻿
+@model List<Agri_Web.MVC.Models.TelemetryViewModel>
+
+@{
+    ViewData["Title"] = "Farm Telemetry";
+
+    var farmName = ViewBag.FarmName as string ?? "Farm001";
+
+    var averageMoisture = Model.Any()
+        ? Model.Average(x => x.SoilMoisture)
+        : 0;
+
+    var averageTemperature = Model.Any()
+        ? Model.Average(x => x.Temperature)
+        : 0;
+
+    var averagePH = Model.Any()
+        ? Model.Average(x => x.PHLevel)
+        : 0;
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">Farm Telemetry Dashboard</h2>
+            <p class="text-muted mb-0">
+                Monitor live soil and environmental readings for @farmName.
+            </p>
+        </div>
+
+        <a asp-action="Refresh"
+           asp-route-farmName="@farmName"
+           class="btn btn-outline-success">
+            <i class="bi bi-arrow-clockwise"></i>
+            Refresh Readings
+        </a>
+    </div>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Average Soil Moisture</p>
+                            <h3 class="fw-bold">
+                                @averageMoisture.ToString("0.0")%
+                            </h3>
+                        </div>
+                        <i class="bi bi-droplet-half fs-1 text-primary"></i>
+                    </div>
+                    <small class="text-muted">Across returned sensor readings</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Average Temperature</p>
+                            <h3 class="fw-bold">
+                                @averageTemperature.ToString("0.0")°C
+                            </h3>
+                        </div>
+                        <i class="bi bi-thermometer-half fs-1 text-danger"></i>
+                    </div>
+                    <small class="text-muted">Across returned sensor readings</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <p class="text-muted mb-1">Average Soil pH</p>
+                            <h3 class="fw-bold">
+                                @averagePH.ToString("0.0")
+                            </h3>
+                        </div>
+                        <i class="bi bi-activity fs-1 text-success"></i>
+                    </div>
+                    <small class="text-muted">Across returned sensor readings</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0">Sensor Readings</h5>
+        </div>
+
+        <div class="card-body">
+
+            @if (Model == null || !Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-graph-up display-3 text-muted"></i>
+                    <h5 class="mt-3">No telemetry data available</h5>
+                    <p class="text-muted">
+                        There are currently no sensor records for this farm.
+                    </p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Sensor ID</th>
+                                <th>Field</th>
+                                <th>Soil Moisture</th>
+                                <th>Temperature</th>
+                                <th>Soil pH</th>
+                                <th>Recorded At</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong>@item.SensorId</strong>
+                                    </td>
+
+                                    <td>@item.FieldId</td>
+
+                                    <td>
+                                        <span class="badge
+                                            @(item.SoilMoisture < 30
+                                                ? "bg-danger"
+                                                : item.SoilMoisture < 50
+                                                    ? "bg-warning text-dark"
+                                                    : "bg-success")">
+                                            @item.SoilMoisture.ToString("0.0")%
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @item.Temperature.ToString("0.0") °C
+                                    </td>
+
+                                    <td>@item.PHLevel.ToString("0.0")</td>
+
+                                    <td>
+                                        @item.RecordedAt.ToLocalTime()
+                                            .ToString("dd MMM yyyy HH:mm")
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+
+        </div>
+    </div>
+
+    <p class="text-muted small mt-3">
+        The dashboard displays the latest readings returned by the
+        Telemetry Azure Function. Refresh to request updated data.
+    </p>
+
+</div>
