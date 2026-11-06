@@ -1,13 +1,85 @@
-using Agri_Web.MVC.Models;
+
+using System.Security.Claims;
+using ClassLibrary.Data;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 
 namespace Agri_Web.MVC.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly ApplicationDbContext _context;
+        private readonly ILogger<HomeController> _logger;
+
+        public HomeController(
+            ApplicationDbContext context,
+            ILogger<HomeController> logger)
         {
+            _context = context;
+            _logger = logger;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            // Visitors see the public landing page.
+            if (User.Identity?.IsAuthenticated != true)
+            {
+                return View();
+            }
+
+            string role = User.FindFirstValue(
+                ClaimTypes.Role) ?? string.Empty;
+
+            ViewBag.Username = User.Identity.Name;
+            ViewBag.Role = role;
+
+            // Farmer dashboard
+            if (role == "Farmer")
+            {
+                string? userId = User.FindFirstValue(
+                    ClaimTypes.NameIdentifier);
+
+                if (int.TryParse(userId, out int farmerId))
+                {
+                    var farmer = await _context.Farmers
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(
+                            x => x.FarmerId == farmerId);
+
+                    if (farmer != null)
+                    {
+                        ViewBag.FarmName = farmer.FarmName;
+
+                        ViewBag.DeviceCount =
+                            await _context.Devices.CountAsync(
+                                x => x.FarmName == farmer.FarmName);
+                    }
+                }
+            }
+
+            // Administrator dashboard
+            if (role == "Admin")
+            {
+                ViewBag.FarmerCount =
+                    await _context.Farmers.CountAsync();
+
+                ViewBag.AgronomistCount =
+                    await _context.Agronomists.CountAsync();
+
+                ViewBag.AdminCount =
+                    await _context.Admins.CountAsync();
+
+                ViewBag.DeviceCount =
+                    await _context.Devices.CountAsync();
+            }
+
+            // Agronomist dashboard
+            if (role == "Agronomist")
+            {
+                ViewBag.DeviceCount =
+                    await _context.Devices.CountAsync();
+            }
+
             return View();
         }
 
@@ -16,10 +88,9 @@ namespace Agri_Web.MVC.Controllers
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View();
         }
     }
 }

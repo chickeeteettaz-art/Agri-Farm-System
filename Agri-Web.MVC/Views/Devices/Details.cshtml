@@ -1,0 +1,31 @@
+﻿@model ClassLibrary.Data.Device
+
+@{
+    ViewData["Title"] = "Device Details";
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <h3 class="fw-bold">Device Details</h3>
+            <hr />
+
+            <p><strong>Device ID:</strong> @Model.DeviceId</p>
+            <p><strong>Device Name:</strong> @Model.DeviceName</p>
+            <p><strong>Device Type:</strong> @Model.DeviceType</p>
+            <p><strong>Farm:</strong> @Model.FarmName</p>
+            <p><strong>Status:</strong> @Model.Status</p>
+            <p>
+                <strong>Last Updated:</strong>
+                @Model.LastUpdated.ToLocalTime()
+            </p>
+
+            <a asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back to Devices
+            </a>
+
+        </div>
+    </div>
+</div>

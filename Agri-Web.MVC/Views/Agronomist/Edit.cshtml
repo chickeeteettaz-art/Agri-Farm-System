@@ -1,0 +1,40 @@
+﻿@model ClassLibrary.Data.Agronomist
+
+@{
+    ViewData["Title"] = "Edit Agronomist";
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <h3 class="fw-bold mb-4">Edit Agronomist</h3>
+
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.AgronomistId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input name="username"
+                           value="@Model.Username"
+                           class="form-control"
+                           required />
+                </div>
+
+                <button type="submit" class="btn btn-success">
+                    Save Changes
+                </button>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Cancel
+                </a>
+            </form>
+
+        </div>
+    </div>
+</div>

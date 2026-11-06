@@ -1,7 +1,16 @@
-﻿@{
+﻿
+@using System.Security.Claims
+
+@{
     var pageTitle = ViewData["Title"]?.ToString() ?? "Dashboard";
     var controller = ViewContext.RouteData.Values["controller"]?.ToString();
     var action = ViewContext.RouteData.Values["action"]?.ToString();
+
+    bool isAuthenticated = User.Identity?.IsAuthenticated == true;
+    string username = User.Identity?.Name ?? "User";
+    string role = User.FindFirst(ClaimTypes.Role)?.Value ?? "User";
+
+    bool isAuthPage = controller == "Auth";
 }
 
 <!DOCTYPE html>
@@ -26,22 +35,129 @@
 </head>
 
 <body>
+
+@if (!isAuthenticated)
+{
+    <!-- PUBLIC / AUTHENTICATION LAYOUT -->
+
+    <div class="auth-shell">
+
+        <nav class="navbar navbar-expand-lg bg-white border-bottom shadow-sm">
+            <div class="container">
+
+                <a class="navbar-brand fw-bold d-flex align-items-center gap-2"
+                   asp-controller="Home"
+                   asp-action="Index">
+
+                    <i class="bi bi-flower1 text-success fs-3"></i>
+
+                    <span>
+                        AgriStream
+                        <small class="d-block text-muted"
+                               style="font-size: 9px; letter-spacing: 2px;">
+                            IoT FARM MANAGEMENT
+                        </small>
+                    </span>
+                </a>
+
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#publicNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="publicNavbar">
+
+                    <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-3">
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               asp-controller="Home"
+                               asp-action="Index">
+                                Home
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="#features">
+                                Features
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link"
+                               href="#about">
+                                About
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Auth"
+                               asp-action="Login"
+                               class="btn btn-outline-success px-4">
+                                Login
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a asp-controller="Auth"
+                               asp-action="Register"
+                               class="btn btn-success px-4">
+                                Create Account
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+        <main class="public-content">
+            @RenderBody()
+        </main>
+
+        <footer class="border-top bg-white py-4 mt-5">
+            <div class="container d-flex flex-column flex-md-row
+                        justify-content-between gap-2">
+
+                <span class="text-muted small">
+                    © @DateTime.Now.Year AgriStream IoT
+                </span>
+
+                <span class="text-muted small">
+                    Smart agriculture through connected technology.
+                </span>
+
+            </div>
+        </footer>
+
+    </div>
+}
+else
+{
+    <!-- AUTHENTICATED APPLICATION LAYOUT -->
+
     <div class="app-shell">
 
-        <!-- Mobile sidebar backdrop -->
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
-        <!-- Sidebar -->
         <aside class="app-sidebar" id="appSidebar">
 
+            <!-- BRAND -->
             <div class="sidebar-brand">
+
                 <div class="brand-icon">
                     <i class="bi bi-flower1"></i>
                 </div>
 
                 <div class="brand-details">
                     <span class="brand-name">AgriStream</span>
-                    <span class="brand-subtitle">IoT FARM MANAGEMENT</span>
+                    <span class="brand-subtitle">
+                        IoT FARM MANAGEMENT
+                    </span>
                 </div>
 
                 <button class="sidebar-close d-lg-none"
@@ -50,22 +166,36 @@
                         aria-label="Close navigation">
                     <i class="bi bi-x-lg"></i>
                 </button>
+
             </div>
 
+            <!-- SIDEBAR NAVIGATION -->
             <div class="sidebar-content">
 
-                <div class="sidebar-section-label">WORKSPACE</div>
+                <div class="sidebar-section-label">
+                    WORKSPACE
+                </div>
 
                 <a asp-controller="Home"
                    asp-action="Index"
-                   class="sidebar-link @(controller == "Home" ? "active" : "")">
+                   class="sidebar-link @(controller == "Home" && action == "Index" ? "active" : "")">
+
                     <i class="bi bi-grid-1x2"></i>
                     <span>Dashboard</span>
+                </a>
+
+                <a asp-controller="Devices"
+                   asp-action="Index"
+                   class="sidebar-link @(controller == "Devices" ? "active" : "")">
+
+                    <i class="bi bi-cpu"></i>
+                    <span>IoT Devices</span>
                 </a>
 
                 <a asp-controller="Telemetry"
                    asp-action="Index"
                    class="sidebar-link @(controller == "Telemetry" ? "active" : "")">
+
                     <i class="bi bi-activity"></i>
                     <span>Farm Telemetry</span>
                 </a>
@@ -73,29 +203,87 @@
                 <a asp-controller="DroneImages"
                    asp-action="Index"
                    class="sidebar-link @(controller == "DroneImages" ? "active" : "")">
+
                     <i class="bi bi-camera"></i>
                     <span>Drone Images</span>
                 </a>
 
-                <div class="sidebar-section-label mt-4">FARM OPERATIONS</div>
+                <div class="sidebar-section-label mt-4">
+                    FARM OPERATIONS
+                </div>
 
                 <a asp-controller="Irrigation"
                    asp-action="Index"
                    class="sidebar-link @(controller == "Irrigation" ? "active" : "")">
+
                     <i class="bi bi-droplet"></i>
                     <span>Irrigation Control</span>
                 </a>
 
+                @if (User.IsInRole("Farmer"))
+                {
+                    <a asp-controller="Farmers"
+                       asp-action="Details"
+                       asp-route-id="@User.FindFirstValue(ClaimTypes.NameIdentifier)"
+                       class="sidebar-link @(controller == "Farmers" ? "active" : "")">
+
+                        <i class="bi bi-person"></i>
+                        <span>My Farm Profile</span>
+                    </a>
+                }
+
+                @if (User.IsInRole("Agronomist") ||
+                     User.IsInRole("Admin"))
+                {
+                    <div class="sidebar-section-label mt-4">
+                        FARM MANAGEMENT
+                    </div>
+                }
+
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Farmers"
+                       asp-action="Index"
+                       class="sidebar-link @(controller == "Farmers" ? "active" : "")">
+
+                        <i class="bi bi-people"></i>
+                        <span>Farmers</span>
+                    </a>
+
+                    <a asp-controller="Agronomists"
+                       asp-action="Index"
+                       class="sidebar-link @(controller == "Agronomists" ? "active" : "")">
+
+                        <i class="bi bi-person-workspace"></i>
+                        <span>Agronomists</span>
+                    </a>
+
+                    <a asp-controller="Admins"
+                       asp-action="Index"
+                       class="sidebar-link @(controller == "Admins" ? "active" : "")">
+
+                        <i class="bi bi-shield-lock"></i>
+                        <span>Administrators</span>
+                    </a>
+                }
+
+                <div class="sidebar-section-label mt-4">
+                    INFORMATION
+                </div>
+
                 <a asp-controller="Home"
                    asp-action="Privacy"
-                   class="sidebar-link @(controller == "Privacy" ? "active" : "")">
+                   class="sidebar-link @(action == "Privacy" ? "active" : "")">
+
                     <i class="bi bi-shield-check"></i>
                     <span>Privacy</span>
                 </a>
 
             </div>
 
+            <!-- SIDEBAR BOTTOM -->
             <div class="sidebar-bottom">
+
                 <div class="sidebar-help">
                     <div class="help-icon">
                         <i class="bi bi-headset"></i>
@@ -112,26 +300,34 @@
                     AgriStream IoT
                     <span class="version-number">v1.0</span>
                 </div>
+
             </div>
+
         </aside>
 
-        <!-- Main application -->
+        <!-- MAIN APPLICATION -->
         <div class="app-main">
 
             <header class="topbar">
 
                 <div class="d-flex align-items-center gap-3">
+
                     <button class="mobile-menu-button d-lg-none"
                             id="sidebarToggle"
                             type="button"
                             aria-label="Open navigation">
+
                         <i class="bi bi-list"></i>
                     </button>
 
                     <div class="page-heading">
-                        <span class="page-heading-label">AGRI MANAGEMENT PLATFORM</span>
+                        <span class="page-heading-label">
+                            AGRI MANAGEMENT PLATFORM
+                        </span>
+
                         <h1>@pageTitle</h1>
                     </div>
+
                 </div>
 
                 <div class="topbar-right">
@@ -144,17 +340,36 @@
                     <div class="topbar-divider"></div>
 
                     <div class="user-profile">
+
                         <div class="user-avatar">
                             <i class="bi bi-person-fill"></i>
                         </div>
 
                         <div class="user-details">
-                            <strong>Farm User</strong>
-                            <span>Farm Management</span>
+                            <strong>@username</strong>
+                            <span>@role</span>
                         </div>
+
                     </div>
 
+                    <form asp-controller="Auth"
+                          asp-action="Logout"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <button type="submit"
+                                class="btn btn-outline-danger btn-sm">
+
+                            <i class="bi bi-box-arrow-right"></i>
+                            Logout
+
+                        </button>
+
+                    </form>
+
                 </div>
+
             </header>
 
             <main class="page-content">
@@ -163,37 +378,42 @@
 
             <footer class="app-footer">
                 <span>© @DateTime.Now.Year AgriStream IoT</span>
-                <span>Smart agriculture through connected technology.</span>
+
+                <span>
+                    Smart agriculture through connected technology.
+                </span>
             </footer>
 
         </div>
     </div>
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-            const sidebar = document.getElementById("appSidebar");
-            const backdrop = document.getElementById("sidebarBackdrop");
+<script>
+    const sidebar = document.getElementById("appSidebar");
+    const backdrop = document.getElementById("sidebarBackdrop");
 
-            function openSidebar() {
-                sidebar.classList.add("sidebar-open");
-                backdrop.classList.add("backdrop-visible");
-            }
+    function openSidebar() {
+        sidebar?.classList.add("sidebar-open");
+        backdrop?.classList.add("backdrop-visible");
+    }
 
-            function closeSidebar() {
-                sidebar.classList.remove("sidebar-open");
-                backdrop.classList.remove("backdrop-visible");
-            }
+    function closeSidebar() {
+        sidebar?.classList.remove("sidebar-open");
+        backdrop?.classList.remove("backdrop-visible");
+    }
 
-            document.getElementById("sidebarToggle")
-                ?.addEventListener("click", openSidebar);
+    document.getElementById("sidebarToggle")
+        ?.addEventListener("click", openSidebar);
 
-            document.getElementById("sidebarClose")
-                ?.addEventListener("click", closeSidebar);
+    document.getElementById("sidebarClose")
+        ?.addEventListener("click", closeSidebar);
 
-            backdrop?.addEventListener("click", closeSidebar);
-    </script>
+    backdrop?.addEventListener("click", closeSidebar);
+</script>
 
-    @await RenderSectionAsync("Scripts", required: false)
+@await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

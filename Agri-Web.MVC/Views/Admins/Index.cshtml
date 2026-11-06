@@ -1,0 +1,82 @@
+﻿@model IEnumerable<ClassLibrary.Data.Admin>
+
+@{
+    ViewData["Title"] = "Administrators";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Administrator Management</h2>
+
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-person-plus"></i> Add Administrator
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Admin ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var admin in Model)
+                    {
+                        <tr>
+                            <td>@admin.AdminId</td>
+                            <td>@admin.Username</td>
+                            <td>
+                                <span class="badge bg-dark">@admin.Role</span>
+                            </td>
+                            <td>
+                                @if (User.FindFirst(
+                                    System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                                    != admin.AdminId.ToString())
+                                {
+                                    <form asp-action="Delete"
+                                          asp-route-id="@admin.AdminId"
+                                          method="post">
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Delete this administrator?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Current account</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+</div>

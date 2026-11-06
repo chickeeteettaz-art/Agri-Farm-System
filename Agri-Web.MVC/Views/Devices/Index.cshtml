@@ -1,0 +1,120 @@
+﻿@model IEnumerable<ClassLibrary.Data.Device>
+
+@{
+    ViewData["Title"] = "Device Management";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold">IoT Device Management</h2>
+            <p class="text-muted">
+                View and manage registered farm devices.
+            </p>
+        </div>
+
+        @if (User.IsInRole("Admin") || User.IsInRole("Agronomist"))
+        {
+            <a asp-action="Create" class="btn btn-success">
+                <i class="bi bi-plus-circle"></i> Register Device
+            </a>
+        }
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body table-responsive">
+
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Device ID</th>
+                        <th>Device Name</th>
+                        <th>Device Type</th>
+                        <th>Farm</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var device in Model)
+                    {
+                        <tr>
+                            <td>@device.DeviceId</td>
+                            <td>@device.DeviceName</td>
+                            <td>@device.DeviceType</td>
+                            <td>@device.FarmName</td>
+
+                            <td>
+                                <span class="badge
+                                    @(device.Status == "Online"
+                                        ? "bg-success"
+                                        : device.Status == "Irrigating"
+                                            ? "bg-primary"
+                                            : "bg-secondary")">
+                                    @device.Status
+                                </span>
+                            </td>
+
+                            <td>
+                                @device.LastUpdated.ToLocalTime()
+                                    .ToString("dd MMM yyyy HH:mm")
+                            </td>
+
+                            <td>
+                                <a asp-action="Details"
+                                   asp-route-id="@device.DeviceId"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+
+                                @if (User.IsInRole("Admin") ||
+                                     User.IsInRole("Agronomist"))
+                                {
+                                    <a asp-action="Edit"
+                                       asp-route-id="@device.DeviceId"
+                                       class="btn btn-sm btn-outline-secondary">
+                                        Edit
+                                    </a>
+                                }
+
+                                @if (User.IsInRole("Admin"))
+                                {
+                                    <form asp-action="Delete"
+                                          asp-route-id="@device.DeviceId"
+                                          method="post"
+                                          class="d-inline">
+                                        @Html.AntiForgeryToken()
+
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Delete this device?');">
+                                            Delete
+                                        </button>
+                                    </form>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @if (!Model.Any())
+            {
+                <p class="text-center text-muted py-4">
+                    No registered devices found.
+                </p>
+            }
+
+        </div>
+    </div>
+</div>

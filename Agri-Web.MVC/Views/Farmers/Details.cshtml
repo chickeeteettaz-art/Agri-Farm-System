@@ -1,0 +1,28 @@
+﻿@model ClassLibrary.Data.Farmer
+
+@{
+    ViewData["Title"] = "Farmer Details";
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+
+            <h2 class="fw-bold">Farmer Profile</h2>
+
+            <hr />
+
+            <p><strong>Farmer ID:</strong> @Model.FarmerId</p>
+            <p><strong>Username:</strong> @Model.Username</p>
+            <p><strong>Farm Name:</strong> @Model.FarmName</p>
+            <p><strong>Role:</strong> @Model.Role</p>
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-outline-secondary">
+                Back
+            </a>
+
+        </div>
+    </div>
+</div>
